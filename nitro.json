@@ -1,19 +1,17 @@
 {
   "$schema": "https://nitro.margelo.com/nitro.schema.json",
-  "cxxNamespace": [
-    "haptic"
-  ],
+  "cxxNamespace": ["haptic"],
   "ios": {
     "iosModuleName": "NitroHaptic"
   },
   "android": {
-    "androidNamespace": [
-      "haptic"
-    ],
+    "androidNamespace": ["haptic"],
     "androidCxxLibName": "NitroHaptic"
   },
-  "autolinking": {},
-  "ignorePaths": [
-    "**/node_modules"
-  ]
+  "autolinking": {
+    "Haptic": {
+      "swift": "HybridHaptic"
+    }
+  },
+  "ignorePaths": ["**/node_modules"]
 }
