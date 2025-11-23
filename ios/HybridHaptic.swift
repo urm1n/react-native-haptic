@@ -48,30 +48,29 @@ class HybridHaptic: HybridHapticSpec {
         do {
           let seconds = duration / 1000.0
 
-          // ---- Intensity Curve (0 → 0.6) ----
+          // ---- Intensity Curve (0.6 → 0.8) ----
           let intensityCurve = CHHapticParameterCurve(
               parameterID: .hapticIntensityControl,
               controlPoints: [
-                  CHHapticParameterCurve.ControlPoint(relativeTime: 0.0, value: 0.0),
-                  CHHapticParameterCurve.ControlPoint(relativeTime: seconds * 0.25, value: 0.25),
-                  CHHapticParameterCurve.ControlPoint(relativeTime: seconds * 0.5, value: 0.45),
-                  CHHapticParameterCurve.ControlPoint(relativeTime: seconds * 1.0, value: 0.6)
+                  .init(relativeTime: 0.0, value: 0.6),          // start strong enough to feel immediately
+                  .init(relativeTime: seconds * 0.5, value: 0.7),
+                  .init(relativeTime: seconds * 1.0, value: 0.8) // pleasant strong finish
               ],
               relativeTime: 0
           )
 
-          // ---- Sharpness Curve (0.1 → 0.3) ----
+          // ---- Sharpness Curve (0.15 → 0.25) ----
           let sharpnessCurve = CHHapticParameterCurve(
               parameterID: .hapticSharpnessControl,
               controlPoints: [
-                  .init(relativeTime: 0.0, value: 0.1),
+                  .init(relativeTime: 0.0, value: 0.15),
                   .init(relativeTime: seconds * 0.5, value: 0.2),
-                  .init(relativeTime: seconds * 1.0, value: 0.3)
+                  .init(relativeTime: seconds * 1.0, value: 0.25)
               ],
               relativeTime: 0
           )
 
-          // Continuous event (baseline)
+          // Baseline continuous event
           let event = CHHapticEvent(
               eventType: .hapticContinuous,
               parameters: [],
@@ -93,6 +92,7 @@ class HybridHaptic: HybridHapticSpec {
         }
       }
   }
+
 
   // MARK: - stop()
   func stop() throws {
