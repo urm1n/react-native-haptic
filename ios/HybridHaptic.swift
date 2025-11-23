@@ -38,38 +38,60 @@ class HybridHaptic: HybridHapticSpec {
 
   // MARK: - play(duration)
   func play(duration: Double) throws {
-    engineQueue.async { [weak self] in
-      guard let self = self else { return }
+      engineQueue.async { [weak self] in
+        guard let self = self else { return }
 
-      self.stopInternal() // stop any previous running pattern
+        self.stopInternal()
 
-      guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else {
-        print("⚠️ Device does not support CoreHaptics")
-        return
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+
+        do {
+          let seconds = duration / 1000.0
+
+          // ---- Intensity Curve (0 → 0.6) ----
+          let intensityCurve = CHHapticParameterCurve(
+              parameterID: .hapticIntensityControl,
+              controlPoints: [
+                  CHHapticParameterCurve.ControlPoint(relativeTime: 0.0, value: 0.0),
+                  CHHapticParameterCurve.ControlPoint(relativeTime: seconds * 0.25, value: 0.25),
+                  CHHapticParameterCurve.ControlPoint(relativeTime: seconds * 0.5, value: 0.45),
+                  CHHapticParameterCurve.ControlPoint(relativeTime: seconds * 1.0, value: 0.6)
+              ],
+              relativeTime: 0
+          )
+
+          // ---- Sharpness Curve (0.1 → 0.3) ----
+          let sharpnessCurve = CHHapticParameterCurve(
+              parameterID: .hapticSharpnessControl,
+              controlPoints: [
+                  .init(relativeTime: 0.0, value: 0.1),
+                  .init(relativeTime: seconds * 0.5, value: 0.2),
+                  .init(relativeTime: seconds * 1.0, value: 0.3)
+              ],
+              relativeTime: 0
+          )
+
+          // Continuous event (baseline)
+          let event = CHHapticEvent(
+              eventType: .hapticContinuous,
+              parameters: [],
+              relativeTime: 0,
+              duration: seconds
+          )
+
+          let pattern = try CHHapticPattern(
+              events: [event],
+              parameterCurves: [intensityCurve, sharpnessCurve]
+          )
+
+          self.player = try self.engine?.makeAdvancedPlayer(with: pattern)
+          try self.engine?.start()
+          try self.player?.start(atTime: 0)
+
+        } catch {
+          print("Haptic error:", error)
+        }
       }
-
-      do {
-        // Build continuous haptic pattern
-        let event = CHHapticEvent(
-          eventType: .hapticContinuous,
-          parameters: [
-            CHHapticEventParameter(parameterID: .hapticIntensity, value: 1.0),
-            CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.5)
-          ],
-          relativeTime: 0,
-          duration: duration / 1000.0 // convert ms → seconds
-        )
-
-        let pattern = try CHHapticPattern(events: [event], parameters: [])
-        self.player = try self.engine?.makeAdvancedPlayer(with: pattern)
-
-        try self.engine?.start()
-        try self.player?.start(atTime: CHHapticTimeImmediate)
-
-      } catch {
-        print("❌ Haptic play error:", error)
-      }
-    }
   }
 
   // MARK: - stop()
