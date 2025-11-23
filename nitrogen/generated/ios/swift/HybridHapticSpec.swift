@@ -15,6 +15,7 @@ public protocol HybridHapticSpec_protocol: HybridObject {
 
   // Methods
   func play(duration: Double) throws -> Void
+  func stop() throws -> Void
 }
 
 public extension HybridHapticSpec_protocol {

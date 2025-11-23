@@ -66,6 +66,12 @@ namespace margelo::nitro::haptic {
         std::rethrow_exception(__result.error());
       }
     }
+    inline void stop() override {
+      auto __result = _swiftPart.stop();
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
 
   private:
     NitroHaptic::HybridHapticSpec_cxx _swiftPart;

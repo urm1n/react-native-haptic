@@ -49,6 +49,7 @@ namespace margelo::nitro::haptic {
     public:
       // Methods
       virtual void play(double duration) = 0;
+      virtual void stop() = 0;
 
     protected:
       // Hybrid Setup
