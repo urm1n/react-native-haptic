@@ -52,8 +52,8 @@ class HybridHaptic: HybridHapticSpec {
           let intensityCurve = CHHapticParameterCurve(
               parameterID: .hapticIntensityControl,
               controlPoints: [
-                  .init(relativeTime: 0.0, value: 0.6),          // start strong enough to feel immediately
-                  .init(relativeTime: seconds * 0.5, value: 0.7),
+                  .init(relativeTime: 0.0, value: 0.7),          // start strong enough to feel immediately
+                  .init(relativeTime: seconds * 0.5, value: 0.75),
                   .init(relativeTime: seconds * 1.0, value: 0.8) // pleasant strong finish
               ],
               relativeTime: 0
